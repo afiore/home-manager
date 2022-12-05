@@ -30,7 +30,7 @@
 
     sessionVariables = {
       "PATH" = "$PATH:$HOME/local/bin:$HOME/.krew/bin";
-      "EDITOR" = "${config.programs.vscode.package}/bin/code";
+      "EDITOR" = "${config.programs.vscode.package}/bin/code --wait";
       "PAGER" = "${pkgs.bat}/bin/bat";
     };
   };
