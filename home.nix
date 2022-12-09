@@ -7,13 +7,30 @@
   home.homeDirectory = "/home/a.fiore";
 
   home.packages = [
+    # Editor
+    pkgs.vscode
+
+    # Utils
     pkgs.htop
     pkgs.bat
-    pkgs.kubectl
-    pkgs.krew
     pkgs.hex
+
+    (pkgs.parquet-tools.overridePythonAttrs (old: {
+      doCheck = false;
+    }))
+
+    # Ops
+    pkgs.kubectl
+    pkgs.k9s
+    pkgs.krew
+
+    # Desktop
+    pkgs.signal-desktop
+
+    # Nix
     pkgs.nixpkgs-fmt
     pkgs.nil
+    pkgs.arion
   ];
 
   # This value determines the Home Manager release that your
@@ -25,14 +42,15 @@
   # the Home Manager release notes for a list of state version
   # changes in each release.
   home = {
-
     stateVersion = "22.05";
+  };
 
-    sessionVariables = {
-      "PATH" = "$PATH:$HOME/local/bin:$HOME/.krew/bin";
-      "EDITOR" = "${config.programs.vscode.package}/bin/code --wait";
-      "PAGER" = "${pkgs.bat}/bin/bat";
-    };
+  xdg = {
+    enable = true;
+    mime.enable = true;
+    systemDirs.data = [
+      "${config.home.homeDirectory}/.nix-profile/share"
+    ];
   };
 
   # Let Home Manager install and manage itself.
@@ -51,6 +69,12 @@
       save = 1000000;
       share = true;
       extended = true;
+    };
+
+    sessionVariables = {
+      "EDITOR" = "$HOME/.nix-profile/bin/code -r --wait";
+      "PATH" = "$PATH:$HOME/local/bin:$HOME/.krew/bin";
+      "PAGER" = "${pkgs.bat}/bin/bat";
     };
 
     shellAliases = {
@@ -96,10 +120,11 @@
 
   programs.vscode = {
     enable = true;
-
+    package = pkgs.vscode;
     extensions = [
       pkgs.vscode-extensions.matklad.rust-analyzer
       pkgs.vscode-extensions.vscodevim.vim
+      pkgs.vscode-extensions.ms-azuretools.vscode-docker
     ];
 
     userSettings = {
@@ -168,4 +193,25 @@
       package.disabled = true;
     };
   };
+
+  #  programs.firefox = {
+  #    enable = true;
+  #    package = pkgs.firefox.override { 
+  #      cfg = {
+  #
+  #      };
+  #    };
+  #    enableGnomeExtensions = true;
+  #  };
+
+  programs.chromium = {
+    enable = true;
+    extensions = [
+      #vimum
+      { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; }
+    ];
+  };
+
+  targets.genericLinux.enable = true;
+
 }
