@@ -24,13 +24,13 @@
     pkgs.k9s
     pkgs.krew
 
-    # Desktop
-    pkgs.signal-desktop
-
     # Nix
     pkgs.nixpkgs-fmt
     pkgs.nil
     pkgs.arion
+
+    # Desktop
+    pkgs.signal-desktop
   ];
 
   # This value determines the Home Manager release that your
@@ -41,15 +41,19 @@
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
-  home = {
-    stateVersion = "22.05";
+  home.stateVersion = "22.05";
+
+  home.file.nix-profile = {
+    source = "${config.home.homeDirectory}/.nix-profile/share";
+    target = "${config.home.homeDirectory}/.local/share/nix-profile";
+    recursive = true;
   };
 
   xdg = {
     enable = true;
     mime.enable = true;
     systemDirs.data = [
-      "${config.home.homeDirectory}/.nix-profile/share"
+      "${config.home.homeDirectory}/.local/share/nix-profile"
     ];
   };
 
@@ -213,5 +217,4 @@
   };
 
   targets.genericLinux.enable = true;
-
 }
