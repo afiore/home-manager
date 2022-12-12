@@ -20,6 +20,7 @@
     }))
 
     # Ops
+
     pkgs.kubectl
     pkgs.k9s
     pkgs.krew
@@ -41,20 +42,8 @@
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
-  home.stateVersion = "22.05";
-
-  home.file.nix-profile = {
-    source = "${config.home.homeDirectory}/.nix-profile/share";
-    target = "${config.home.homeDirectory}/.local/share/nix-profile";
-    recursive = true;
-  };
-
-  xdg = {
-    enable = true;
-    mime.enable = true;
-    systemDirs.data = [
-      "${config.home.homeDirectory}/.local/share/nix-profile"
-    ];
+  home = {
+    stateVersion = "22.05";
   };
 
   # Let Home Manager install and manage itself.
@@ -95,10 +84,6 @@
       bindkey "^r" history-incremental-search-backward
     '';
 
-    #TODO: install Cargo via home-manager
-    envExtra = ''
-      . "$HOME/.cargo/env"
-    '';
   };
 
   programs.tmux = {
@@ -113,6 +98,20 @@
       bind-key -T prefix - split-window
       bind-key -T prefix c new-window -c '#{pane_current_path}'
     '';
+
+    plugins = with pkgs.tmuxPlugins; [
+      sensible
+      yank
+      {
+        plugin = dracula;
+        extraConfig = ''
+          				set -g @dracula-show-battery true
+          				set -g @dracula-show-powerline true
+          				set -g @dracula-refresh-rate 10
+                  set -g @dracula-plugins "battery cpu-usage git ram-usage network network-bandwidth"
+          			'';
+      }
+    ];
   };
 
   programs.fzf = {
@@ -126,6 +125,7 @@
     enable = true;
     package = pkgs.vscode;
     extensions = [
+      pkgs.vscode-extensions.mkhl.direnv
       pkgs.vscode-extensions.matklad.rust-analyzer
       pkgs.vscode-extensions.vscodevim.vim
       pkgs.vscode-extensions.ms-azuretools.vscode-docker
@@ -197,24 +197,4 @@
       package.disabled = true;
     };
   };
-
-  #  programs.firefox = {
-  #    enable = true;
-  #    package = pkgs.firefox.override { 
-  #      cfg = {
-  #
-  #      };
-  #    };
-  #    enableGnomeExtensions = true;
-  #  };
-
-  programs.chromium = {
-    enable = true;
-    extensions = [
-      #vimum
-      { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; }
-    ];
-  };
-
-  targets.genericLinux.enable = true;
 }
