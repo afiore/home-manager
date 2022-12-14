@@ -65,6 +65,7 @@
     };
 
     sessionVariables = {
+      "NIX_PATH" = "$HOME/.nix-defexpr/channels_root:$NIX_PATH";
       "EDITOR" = "$HOME/.nix-profile/bin/code -r --wait";
       "PATH" = "$PATH:$HOME/local/bin:$HOME/.krew/bin";
       "PAGER" = "${pkgs.bat}/bin/bat";
@@ -97,6 +98,7 @@
       bind-key -T prefix | split-window -h
       bind-key -T prefix - split-window
       bind-key -T prefix c new-window -c '#{pane_current_path}'
+      set-option -g renumber-windows on
     '';
 
     plugins = with pkgs.tmuxPlugins; [
@@ -108,7 +110,7 @@
           				set -g @dracula-show-battery true
           				set -g @dracula-show-powerline true
           				set -g @dracula-refresh-rate 10
-                  set -g @dracula-plugins "battery cpu-usage git ram-usage network network-bandwidth"
+                  set -g @dracula-plugins "battery cpu-usage git ram-usage"
           			'';
       }
     ];
