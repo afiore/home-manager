@@ -9,6 +9,7 @@
   home.packages = [
     # Editor
     pkgs.vscode
+    pkgs.obsidian
 
     # Utils
     pkgs.htop
@@ -29,6 +30,8 @@
     pkgs.nixpkgs-fmt
     pkgs.nil
     pkgs.arion
+    pkgs.nix-doc
+    pkgs.manix
 
     # Desktop
     pkgs.signal-desktop
@@ -44,7 +47,23 @@
   # changes in each release.
   home = {
     stateVersion = "22.05";
+
+    # ensure installed programs' icons show up in the launcher UI
+    activation = {
+      linkDesktopApplications = {
+        after = [ "writeBoundary" "createXdgUserDirectories" ];
+        before = [ ];
+        data = ''
+          rm -rf ${config.xdg.dataHome}/"applications/home-manager"
+          mkdir -p ${config.xdg.dataHome}/"applications/home-manager"
+          cp -Lr ${config.home.homeDirectory}/.nix-profile/share/applications/* ${config.xdg.dataHome}/"applications/home-manager/"
+        '';
+      };
+    };
+
   };
+
+
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -65,10 +84,11 @@
     };
 
     sessionVariables = {
-      "NIX_PATH" = "$HOME/.nix-defexpr/channels_root:$NIX_PATH";
+      #"NIX_PATH" = "$HOME/.nix-defexpr/channels_root:$NIX_PATH";
       "EDITOR" = "$HOME/.nix-profile/bin/code -r --wait";
       "PATH" = "$PATH:$HOME/local/bin:$HOME/.krew/bin";
       "PAGER" = "${pkgs.bat}/bin/bat";
+      "XDG_DATA_DIRS" = "$XDG_DATA_DIRS:${config.xdg.dataHome}/applications/home-manager";
     };
 
     shellAliases = {
@@ -83,6 +103,7 @@
     initExtra = ''
       # history search
       bindkey "^r" history-incremental-search-backward
+      nfpath=(${pkgs.gradle-completion} \$fpath)
     '';
 
   };
@@ -195,6 +216,8 @@
         success_symbol = "[➜](bold green)";
         error_symbol = "[➜](bold red)";
       };
+
+      gcloud.disabled = true;
 
       package.disabled = true;
     };
